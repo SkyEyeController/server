@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "test/proto"; // 添加 go_package 选项，指定包路径和包名
+
+// 定义 IDU 消息
+message IDU {
+    string from_address = 1;         // 发送者地址
+    string to_address = 2;           // 接收者地址
+    string content_type = 3;         // 内容类型，例如 "text/plain" 或 "application/json"
+    string content = 4;              // 实际的内容地址或数据
+    string timestamp = 5;            // Unix 时间戳，表示消息生成时间
+    string proof = 6;                // 用于验证的加密证明，当前可以是默认值
+    string additional_info = 7;      // 其他附加信息（可选）
+}
+
+// 定义 RelayRequest 消息类型，包含一个 IDU
+message RelayRequest {
+    IDU idu = 1;                    // IDU 数据
+}
+
+// 定义 RelayResponse 消息类型，表示中继是否成功
+message RelayResponse {
+    bool success = 1;               // 表示中继是否成功
+    string next_hop = 2;            // 指定下一个节点（可选）
+}
+
+// 定义 gRPC 服务，用于接收跨链交易的请求
+service RelayNetwork {
+    // 接收端链事件触发后的消息，并转发至合适的目标节点
+    rpc RelayIDU (RelayRequest) returns (RelayResponse);
+}
+
+// 端链事件监听服务
+service EndpointChainEventListener {
+    // 监听端链事件并在事件触发时处理
+    rpc ListenForEvents (EventRequest) returns (EventResponse);
+}
+
+// 事件请求消息
+message EventRequest {
+    string event_data = 1;
+}
+
+// 事件响应消息
+message EventResponse {
+    bool success = 1;
+    string message = 2;
+}

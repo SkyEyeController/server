@@ -1,0 +1,455 @@
+Received event data: {"from_address":"0x2d41205CA8b4Dbdf77579D14642e5f218e983771","to_address":"0x2d41205CA8b4Dbdf77579D14642e5f218e983771","content_type":"RT:C|NS:0.5:0.3:0.2|V:0|IDU:text:32:hex|IM:0:0:1","content":"0x746573742d636f6e74656e742d61646472657373","timestamp":"1743671439","proof":"default_proof","additional_info":""}
+
+这是这个程序运行时接收到的消息。
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"net"
+
+	pb "test/proto" // 导入生成的 proto 包，根据实际路径调整
+	"google.golang.org/grpc"
+)
+
+// 服务器结构体
+type server struct {
+	pb.UnimplementedEndpointChainEventListenerServer // 嵌入未实现的服务接口
+}
+
+// 实现 ListenForEvents 方法
+func (s *server) ListenForEvents(ctx context.Context, req *pb.EventRequest) (*pb.EventResponse, error) {
+	eventData := req.GetEventData()
+	fmt.Printf("Received event data: %s\n", eventData)
+
+	// 构造响应
+	response := &pb.EventResponse{
+		Success: true,
+		Message: "Accepted",
+	}
+
+	fmt.Printf("Sending response: %+v\n", response)
+	return response, nil
+}
+
+func main() {
+	// 监听所有网络接口
+	lis, err := net.Listen("tcp", "0.0.0.0:50051")
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
+	}
+
+	// 创建 gRPC 服务器
+	s := grpc.NewServer()
+
+	// 注册服务
+	pb.RegisterEndpointChainEventListenerServer(s, &server{})
+
+	fmt.Println("Server running at 0.0.0.0:50051")
+
+	// 启动服务器
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("Failed to serve: %v", err)
+	}
+}
+
+请你仿照这个SDK，写一个程序，调用Ethcontract长安链合约并监听链上的事件，并保留返回值。
+
+Go-SDK：
+package main
+
+import (
+	"chainmaker.org/chainmaker/common/v2/crypto/asym"
+	"chainmaker.org/chainmaker/common/v2/json"
+	sdkutils "chainmaker.org/chainmaker/sdk-go/v2/utils"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"strconv"
+	"strings"
+	"time"
+
+	"chainmaker.org/chainmaker/common/v2/random/uuid"
+	"chainmaker.org/chainmaker/pb-go/v2/common"
+	sdk "chainmaker.org/chainmaker/sdk-go/v2"
+)
+
+const (
+	admin1CertPath = "./crypto-config/TestCMorg1/user/cmtestuser1/cmtestuser1.sign.crt"
+	admin1KeyPath  = "./crypto-config/TestCMorg1/user/cmtestuser1/cmtestuser1.sign.key"
+	admin2CertPath = "./crypto-config/TestCMorg2/user/cmtestuser2/cmtestuser2.sign.crt"
+	admin2KeyPath  = "./crypto-config/TestCMorg2/user/cmtestuser2/cmtestuser2.sign.key"
+	admin3CertPath = "./crypto-config/TestCMorg3/user/cmtestuser3/cmtestuser3.sign.crt"
+	admin3KeyPath  = "./crypto-config/TestCMorg3/user/cmtestuser3/cmtestuser3.sign.key"
+	admin4CertPath = "./crypto-config/TestCMorg4/user/cmtestuser4/cmtestuser4.sign.crt"
+	admin4KeyPath  = "./crypto-config/TestCMorg4/user/cmtestuser4/cmtestuser4.sign.key"
+	admin5CertPath = "./crypto-config/TestCMorg5/user/cmtestuser5/cmtestuser5.sign.crt"
+	admin5KeyPath  = "./crypto-config/TestCMorg5/user/cmtestuser5/cmtestuser5.sign.key"
+	admin6CertPath = "./crypto-config/TestCMorg6/user/cmtestuser6/cmtestuser6.sign.crt"
+	admin6KeyPath  = "./crypto-config/TestCMorg6/user/cmtestuser6/cmtestuser6.sign.key"
+
+	createContractTimeout    = 5
+	claimContractName        = "claim003"
+	claimVersion             = "2.0.0"
+	claimByteCodePath        = "./config/rust-fact-2.0.0.wasm"
+	sdkConfigOrg1Client1Path = "./config/sdk_config.yml"
+
+	claimQueryMethod  = "find_by_file_hash"
+	claimInvokeMethod = "save"
+
+	org5Id         = "TestCMorg5"
+	org5CaCertPath = "./crypto-config/TestCMorg5/ca/ca.crt"
+	org6Id         = "TestCMorg6"
+	org6CaCertPath = "./crypto-config/TestCMorg6/ca/ca.crt"
+)
+
+func main() {
+	userContractClaim()
+	//updateTrustRoot()
+	//enableSyncCanonicalTxResult()
+	//oneTransactionPerSecond()
+}
+
+func userContractClaim() {
+	fmt.Println("====================== create client ======================")
+
+	client, err := sdk.NewChainClient(
+		sdk.WithConfPath(sdkConfigOrg1Client1Path),
+	)
+	panicErr(err)
+
+	contract, err := client.GetContractInfo(claimContractName)
+    if err != nil {
+        if strings.Contains(err.Error(), "contract not exist") || contract == nil || contract.Name == "" {
+            fmt.Printf("合约[%s]不存在\n", claimContractName)
+            fmt.Println("====================== 创建合约 ======================")
+            createPayload, err := client.CreateContractCreatePayload(claimContractName, claimVersion, claimByteCodePath, common.RuntimeType_WASMER, []*common.KeyValuePair{})
+            panicErr(err)
+			// 添加多方背书
+            endorsers := make([]*common.EndorsementEntry, 0)
+            // 使用 TestCMorg1 的管理员签名
+            endorser1, err1 := sdkutils.MakeEndorserWithPath(admin1KeyPath, admin1CertPath, createPayload)
+            panicErr(err1)
+            // 使用 TestCMorg2 的管理员签名
+            endorser2, err2 := sdkutils.MakeEndorserWithPath(admin2KeyPath, admin2CertPath, createPayload)
+            panicErr(err2)
+            // 使用 TestCMorg3 的管理员签名
+            endorser3, err3 := sdkutils.MakeEndorserWithPath(admin3KeyPath, admin3CertPath, createPayload)
+            panicErr(err3)
+            // 使用 TestCMorg5 的管理员签名（根据需要添加更多）
+            endorser5, err5 := sdkutils.MakeEndorserWithPath(admin5KeyPath, admin5CertPath, createPayload)
+            panicErr(err5)
+			// 使用 TestCMorg4 的管理员签名（根据需要添加更多）
+            endorser4, err4 := sdkutils.MakeEndorserWithPath(admin4KeyPath, admin4CertPath, createPayload)
+            panicErr(err4)
+
+            // 将所有背书添加到 endorsers 列表
+            endorsers = append(endorsers, endorser1, endorser2, endorser3,endorser4, endorser5)
+
+            resp, err := client.SendContractManageRequest(createPayload, endorsers, createContractTimeout, true)
+            panicErr(err)
+            if resp == nil {
+                log.Fatalln("创建合约失败：响应为空")
+            }
+            if resp.ContractResult == nil {
+                log.Fatalf("创建合约失败：ContractResult 为空，TxId: %s", resp.TxId)
+            }
+            fmt.Printf("blockHeight:%d, txId:%s, result:%s, msg:%s\n\n", resp.TxBlockHeight, resp.TxId, resp.ContractResult.Result, resp.ContractResult.Message)
+        } else {
+            panicErr(err)
+        }
+    } else {
+        fmt.Printf("合约已存在 %+v \n\n", contract)
+    }
+
+	fmt.Println("====================== 调用合约 ======================")
+	time.Sleep(time.Second * 2)
+	curTime := strconv.FormatInt(time.Now().Unix(), 10)
+	fileHash := uuid.GetUUID()
+	kvs := []*common.KeyValuePair{
+		{
+			Key:   "time",
+			Value: []byte(curTime),
+		},
+		{
+			Key:   "file_hash",
+			Value: []byte(fileHash),
+		},
+		{
+			Key:   "file_name",
+			Value: []byte(fmt.Sprintf("file_%s", curTime)),
+		},
+	}
+	resp, err := client.InvokeContract(claimContractName, claimInvokeMethod, "", kvs, -1, true)
+	panicErr(err)
+	if resp.Code != common.TxStatusCode_SUCCESS {
+		err = fmt.Errorf("invoke contract failed, [code:%d]/[msg:%s]\n", resp.Code, resp.Message)
+		panicErr(err)
+	}
+	txId := resp.TxId
+	blockHeight := resp.TxBlockHeight
+	fmt.Printf("blockHeight:%d, txId:%s, msg:%s, fileHash:%s\n\n",
+		resp.TxBlockHeight, resp.TxId, resp.ContractResult.Message, fileHash)
+
+	fmt.Println("====================== 执行合约查询接口 ======================")
+	time.Sleep(time.Second * 2)
+	kvs = []*common.KeyValuePair{
+		{
+			Key:   "file_hash",
+			Value: []byte(fileHash),
+		},
+	}
+	resp, err = client.QueryContract(claimContractName, claimQueryMethod, kvs, -1)
+	panicErr(err)
+	fmt.Printf("QUERY claim contract resp: %+v\n\n", resp)
+
+	fmt.Println("====================== 执行交易查询接口 ======================")
+	time.Sleep(time.Second * 2)
+	tx, err := client.GetTxByTxId(txId)
+	panicErr(err)
+	fmt.Printf("%+v \n\n", tx)
+
+	fmt.Println("====================== 执行区块查询接口 ======================")
+	time.Sleep(time.Second * 2)
+	block, err := client.GetBlockByHeight(blockHeight, false)
+	panicErr(err)
+	fmt.Printf("%+v \n\n", block)
+}
+
+func panicErr(err error) {
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func updateTrustRoot() {
+	client, err := sdk.NewChainClient(
+		sdk.WithConfPath(sdkConfigOrg1Client1Path),
+	)
+	panicErr(err)
+	config, err := client.GetChainConfig()
+	panicErr(err)
+	fmt.Printf("【before】\n%+v \n\n", config.GetTrustRoots())
+	file, err := ioutil.ReadFile(org5CaCertPath)
+	panicErr(err)
+
+	// add trust root
+	payload, err := client.CreateChainConfigTrustRootAddPayload(org6Id, []string{string(file)})
+	panicErr(err)
+	endorsers := make([]*common.EndorsementEntry, 0)
+            // 使用 TestCMorg1 的管理员签名
+            endorser1, err1 := sdkutils.MakeEndorserWithPath(admin1KeyPath, admin1CertPath, createPayload)
+            panicErr(err1)
+            // 使用 TestCMorg2 的管理员签名
+            endorser2, err2 := sdkutils.MakeEndorserWithPath(admin2KeyPath, admin2CertPath, createPayload)
+            panicErr(err2)
+            // 使用 TestCMorg3 的管理员签名
+            endorser3, err3 := sdkutils.MakeEndorserWithPath(admin3KeyPath, admin3CertPath, createPayload)
+            panicErr(err3)
+            // 使用 TestCMorg5 的管理员签名（根据需要添加更多）
+            endorser5, err5 := sdkutils.MakeEndorserWithPath(admin5KeyPath, admin5CertPath, createPayload)
+            panicErr(err5)
+			// 使用 TestCMorg4 的管理员签名（根据需要添加更多）
+            endorser4, err4 := sdkutils.MakeEndorserWithPath(admin4KeyPath, admin4CertPath, createPayload)
+            panicErr(err4)
+
+            // 将所有背书添加到 endorsers 列表
+            endorsers = append(endorsers, endorser1, endorser2, endorser3,endorser4, endorser5)
+	_, err = client.SendChainConfigUpdateRequest(payload, endorsers, -1, true)
+	panicErr(err)
+	// query trust root
+	config, err = client.GetChainConfig()
+	fmt.Printf("【add】添加org6 ca\n%+v\n\n", config.GetTrustRoots())
+
+	// invoke
+	time.Sleep(time.Second * 2)
+	resp, err := client.InvokeContractBySigner(claimContractName, claimQueryMethod, "", nil, -1,
+		true, nil, getOrg5Signer())
+	panicErr(err)
+	fmt.Printf("\n【invoke】使用org6 ca签发证书执行成功，%s\n\n", resp.ContractResult.Message)
+
+	// delete trust root
+	payload, err = client.CreateChainConfigTrustRootDeletePayload(org5Id)
+	panicErr(err)
+	endorsers = make([]*common.EndorsementEntry, 0)
+            // 使用 TestCMorg1 的管理员签名
+            endorser1, err1 = sdkutils.MakeEndorserWithPath(admin1KeyPath, admin1CertPath, createPayload)
+            panicErr(err1)
+            // 使用 TestCMorg2 的管理员签名
+            endorser2, err2 = sdkutils.MakeEndorserWithPath(admin2KeyPath, admin2CertPath, createPayload)
+            panicErr(err2)
+            // 使用 TestCMorg3 的管理员签名
+            endorser3, err3 = sdkutils.MakeEndorserWithPath(admin3KeyPath, admin3CertPath, createPayload)
+            panicErr(err3)
+            // 使用 TestCMorg5 的管理员签名（根据需要添加更多）
+            endorser5, err5 = sdkutils.MakeEndorserWithPath(admin5KeyPath, admin5CertPath, createPayload)
+            panicErr(err5)
+			// 使用 TestCMorg4 的管理员签名（根据需要添加更多）
+            endorser4, err4 = sdkutils.MakeEndorserWithPath(admin4KeyPath, admin4CertPath, createPayload)
+            panicErr(err4)
+
+            // 将所有背书添加到 endorsers 列表
+            endorsers = append(endorsers, endorser1, endorser2, endorser3,endorser4, endorser5)
+	_, err = client.SendChainConfigUpdateRequest(payload, endorsers, -1, true)
+	panicErr(err)
+
+	// query trust root
+	config, err = client.GetChainConfig()
+	fmt.Printf("【delete】删除org6 ca\n%+v\n\n", config.GetTrustRoots())
+
+	// invoke
+	time.Sleep(time.Second * 2)
+	resp, err = client.InvokeContractBySigner(claimContractName, claimQueryMethod, "", nil, -1,
+		true, nil, getOrg5Signer())
+	panicErr(err)
+	fmt.Printf("\n【invoke】 使用org6 ca签发证书执行失败，%s\n\n", resp.Message)
+}
+
+func getOrg5Signer() *sdk.CertModeSigner {
+	certPem, err := ioutil.ReadFile(admin5CertPath)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	cert, err := sdkutils.ParseCert(certPem)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	privKeyPem, err := ioutil.ReadFile(admin5KeyPath)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	privateKey, err := asym.PrivateKeyFromPEM(privKeyPem, nil)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	signer := &sdk.CertModeSigner{
+		PrivateKey: privateKey,
+		Cert:       cert,
+		OrgId:      org5Id,
+	}
+	return signer
+}
+
+func enableSyncCanonicalTxResult() {
+	client, err := sdk.NewChainClient(
+		sdk.WithConfPath(sdkConfigOrg1Client1Path),
+		sdk.WithEnableSyncCanonicalTxResult(true),
+	)
+	panicErr(err)
+
+	fmt.Println("====================== 执行区块查询接口 ======================")
+	tx, err := client.GetTxByTxId("177f8cc5d73cf3efcac808e9e1a8a8e07120d2aaeca74742a3d8c1a365c216bf")
+	panicErr(err)
+	txJson, _ := json.Marshal(tx)
+	fmt.Printf("查询交易：%s", txJson)
+}
+
+func oneTransactionPerSecond() {
+
+	client, err := sdk.NewChainClient(
+		sdk.WithConfPath(sdkConfigOrg1Client1Path),
+	)
+	panicErr(err)
+
+	fmt.Println("====================== 调用合约 ======================")
+	for i := 0; i < 100; i++ {
+		time.Sleep(time.Second * 1)
+		t := time.Now().Format("2006-01-02 15:04:05")
+		fmt.Printf("%s 发送第%d个交易\n", t, i)
+		curTime := strconv.FormatInt(time.Now().Unix(), 10)
+		fileHash := uuid.GetUUID()
+		kvs := []*common.KeyValuePair{
+			{
+				Key:   "time",
+				Value: []byte(curTime),
+			},
+			{
+				Key:   "file_hash",
+				Value: []byte(fileHash),
+			},
+			{
+				Key:   "file_name",
+				Value: []byte(fmt.Sprintf("file_%s", curTime)),
+			},
+		}
+		resp, err := client.InvokeContract(claimContractName, claimInvokeMethod, "", kvs, -1, false)
+		panicErr(err)
+		if resp.Code != common.TxStatusCode_SUCCESS {
+			err = fmt.Errorf("invoke contract failed, [code:%d]/[msg:%s]\n", resp.Code, resp.Message)
+			panicErr(err)
+		}
+		//txId := resp.TxId
+		//blockHeight := resp.TxBlockHeight
+		//t = time.Now().Format("2006-01-02 15:04:05")
+		//fmt.Printf("%s blockHeight:%d, txId:%s, msg:%s, fileHash:%s\n\n",
+		//	t, blockHeight, txId, resp.ContractResult.Message, fileHash)
+	}
+}
+
+EthContract合约：
+// ethcontract.go
+/*
+Copyright (C) BABEC. All rights reserved.
+Copyright (C) THL A29 Limited, a Tencent company. All rights reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
+
+package main
+
+import (
+	"chainmaker.org/chainmaker/contract-sdk-go/v2/pb/protogo"
+	"chainmaker.org/chainmaker/contract-sdk-go/v2/sandbox"
+	"chainmaker.org/chainmaker/contract-sdk-go/v2/sdk"
+)
+
+type Ethcontract struct {
+}
+
+func (e *Ethcontract) InitContract() protogo.Response {
+	return sdk.Success([]byte("Ethcontract 初始化成功"))
+}
+
+func (e *Ethcontract) UpgradeContract() protogo.Response {
+	return sdk.Success([]byte("Ethcontract 升级成功"))
+}
+
+func (e *Ethcontract) InvokeContract(method string) protogo.Response {
+	switch method {
+	case "transferContent":
+		return e.TransferContent()
+	default:
+		return sdk.Error("无效的方法")
+	}
+}
+
+func (e *Ethcontract) TransferContent() protogo.Response {
+	params := sdk.Instance.GetArgs()
+
+	// 获取参数
+	from := string(params["from"])                      // 发送者地址
+	to := string(params["to"])                          // 接收者地址
+	contentType := string(params["content_type"])       // 内容类型
+	contentAddress := string(params["content_address"]) // 内容地址
+
+	// 构造事件数据
+	eventData := "Transfer:" +
+		from + ";" +
+		to + ";" +
+		contentType + ";" +
+		contentAddress
+
+	// 触发链上事件
+	sdk.Instance.EmitEvent("TransferEvent", []string{eventData})
+
+	// 返回成功响应（去掉块哈希）
+	return sdk.Success([]byte("Transfer successful"))
+}
+
+func main() {
+	err := sandbox.Start(new(Ethcontract))
+	if err != nil {
+		sdk.Instance.Errorf("启动 Ethcontract 失败: %v", err)
+	}
+}

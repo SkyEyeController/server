@@ -1,0 +1,60 @@
+合约已存在: name:"Ethcontract" version:"1.0.2" runtime_type:DOCKER_GO creator:<org_id:"TestCMorg1" member_info:"-----BEGIN CERTIFICATE-----\nMIIChzCCAi6gAwIBAgIDBjWWMAoGCCqGSM49BAMCMHIxCzAJBgNVBAYTAmNuMRAw\nDgYDVQQIEwdiZWlqaW5nMRAwDgYDVQQHEwdiZWlqaW5nMRMwEQYDVQQKEwpUZXN0\nQ01vcmcxMRIwEAYDVQQLEwlyb290LWNlcnQxFjAUBgNVBAMTDWNhLmNtdGVzdG9y\nZzEwHhcNMjUwNDAxMTU1MDIzWhcNMzQwMzMwMTU1MDIzWjB8MQswCQYDVQQGEwJj\nbjEQMA4GA1UECBMHYmVpamluZzEQMA4GA1UEBxMHYmVpamluZzETMBEGA1UEChMK\nVGVzdENNb3JnMTEOMAwGA1UECxMFYWRtaW4xJDAiBgNVBAMTG2NtdGVzdHVzZXIx\nLnNpZ24uVGVzdENNb3JnMTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABCX3UHUT\nk1cjdvfTIGzx/4gL13JXAz0HiGOC3yvAvXtmxgwcE2MuKGpElf6YbZ8G77f8R0wu\nPAICSVb9Dzv8cyWjgagwgaUwDgYDVR0PAQH/BAQDAgGmMA8GA1UdJQQIMAYGBFUd\nJQAwKQYDVR0OBCIEICmMW4Bnecsj5ziNXw/rhn+Wh9kLbxqSLgRr1oKv0okWMCsG\nA1UdIwQkMCKAICMvn5Edr6y1jBwKW7R6SbXHBFXlzq4lYAhD2DjV1WyWMCoGA1Ud\nEQQjMCGCCWxvY2FsaG9zdIIOY2hhaW5tYWtlci5vcmeHBH8AAAEwCgYIKoZIzj0E\nAwIDRwAwRAIgAd6cAn604ttorauAUXPeHS4yl5YogZLjJt2zb3pRnIsCIFOrALxe\n6Cmr/Eoja5ehsVciGiREHI/5WiCj9jP4KPxS\n-----END CERTIFICATE-----\n" member_id:"cmtestuser1.sign.TestCMorg1" role:"ADMIN" uid:"298c5b806779cb23e7388d5f0feb867f9687d90b6f1a922e046bd682afd28916" > address:"1fecba287744991794410a6600de05f5671f2b02" 
+====================== 开始订阅链上事件 ======================
+当前区块高度: 256
+gRPC 服务运行在 0.0.0.0:50051
+接收到链上事件: TxId=18345059faaa9663ca2ac97be36995b4508aa839245146059c236885dbb58392, Topic=TransferEvent, BlockHeight=256
+接收到链上事件: TxId=18345059faa876bdcafea09fbfeff5eebb43a84553a045f78c8a92c965c04d64, Topic=TransferEvent, BlockHeight=256
+接收到链上事件: TxId=18345059faab84e6ca96e318bd525f0df4c7257b4d6e4c2c98dd9b354a1d2459, Topic=TransferEvent, BlockHeight=256
+接收到链上事件: TxId=18345059faa972d4ca731427b8592f747ad0727d5d724a4d865c12eed086cea7, Topic=TransferEvent, BlockHeight=256
+Received event data: {"from_address":"0x2d41205CA8b4Dbdf77579D14642e5f218e983771","to_address":"0x2d41205CA8b4Dbdf77579D14642e5f218e983771","content_type":"RT:C|NS:0.5:0.3:0.2|V:0|IDU:text:32:hex|IM:0:0:1","content":"0x5d6C9336bce5ccb599ab2db4F91CF597F6B11919","timestamp":"1744167766","proof":"default_proof","additional_info":""}
+Received event data: {"from_address":"0x2d41205CA8b4Dbdf77579D14642e5f218e983771","to_address":"0x2d41205CA8b4Dbdf77579D14642e5f218e983771","content_type":"RT:C|NS:0.5:0.3:0.2|V:0|IDU:text:32:hex|IM:0:0:1","content":"0xA752Fe675605ff836F20B5639B520A95819F7Ccf","timestamp":"1744167766","proof":"default_proof","additional_info":""}
+====================== 调用 Ethcontract 合约 ======================
+====================== 调用 Ethcontract 合约 ======================
+Received event data: {"from_address":"0x2d41205CA8b4Dbdf77579D14642e5f218e983771","to_address":"0x2d41205CA8b4Dbdf77579D14642e5f218e983771","content_type":"RT:C|NS:0.5:0.3:0.2|V:0|IDU:text:32:hex|IM:0:0:1","content":"0x60E6ac47F3425537A400cEF2eC7581ffe7299d0d","timestamp":"1744167766","proof":"default_proof","additional_info":""}
+====================== 调用 Ethcontract 合约 ======================
+Received event data: {"from_address":"0x2d41205CA8b4Dbdf77579D14642e5f218e983771","to_address":"0x2d41205CA8b4Dbdf77579D14642e5f218e983771","content_type":"RT:C|NS:0.5:0.3:0.2|V:0|IDU:text:32:hex|IM:0:0:1","content":"0x8A569c3C07dad1417a47b39bFF17EBd9Ac902c55","timestamp":"1744167766","proof":"default_proof","additional_info":""}
+====================== 调用 Ethcontract 合约 ======================
+交易成功 - TxId: 18348757ed52bb35ca3d11716ec7a9f9fb8cf66a727d441792ef838e71746aa7, BlockHeight: 257, Message: Success
+交易成功 - TxId: 18348757ed518105ca296e94e0dd138df2a4acb85e4e4241a54fa8f3344b363c, BlockHeight: 257, Message: Success
+已发送 TxId 到订阅: 18348757ed518105ca296e94e0dd138df2a4acb85e4e4241a54fa8f3344b363c
+Now waiting for event...
+已发送 TxId 到订阅: 18348757ed52bb35ca3d11716ec7a9f9fb8cf66a727d441792ef838e71746aa7
+Now waiting for event...
+更新期待的 TxId: 18348757ed52bb35ca3d11716ec7a9f9fb8cf66a727d441792ef838e71746aa7
+更新期待的 TxId: 18348757ed518105ca296e94e0dd138df2a4acb85e4e4241a54fa8f3344b363c
+接收到链上事件: TxId=18348757ed53eea8ca33b1c93d6b9266a2ece4bda24642ec920c31789451a379, Topic=TransferEvent, BlockHeight=257
+接收到链上事件: TxId=18348757ed52799fca807445d1cc065e679f49d54c0e4ca5be6f3e4648feddcd, Topic=TransferEvent, BlockHeight=257
+接收到链上事件: TxId=18348757ed52bb35ca3d11716ec7a9f9fb8cf66a727d441792ef838e71746aa7, Topic=TransferEvent, BlockHeight=257
+接收到链上事件: TxId=18348757ed518105ca296e94e0dd138df2a4acb85e4e4241a54fa8f3344b363c, Topic=TransferEvent, BlockHeight=257
+找到匹配的事件: TxId=18348757ed518105ca296e94e0dd138df2a4acb85e4e4241a54fa8f3344b363c
+End Waiting for event...
+event.TxId:%s
+ 18348757ed518105ca296e94e0dd138df2a4acb85e4e4241a54fa8f3344b363c
+txID:%s
+ 18348757ed518105ca296e94e0dd138df2a4acb85e4e4241a54fa8f3344b363c
+Accepted
+responseMsg:Addr_eth:0xA752Fe675605ff836F20B5639B520A95819F7Ccf|Hash:18348757ed518105ca296e94e0dd138df2a4acb85e4e4241a54fa8f3344b363c|Time_rec:2025-04-09-11:02:47:00|Time_hash:2025-04-09-11:02:48:00|Time_send:2025-04-09-11:02:48:00|Stat:1
+交易成功 - TxId: 18348757ed52799fca807445d1cc065e679f49d54c0e4ca5be6f3e4648feddcd, BlockHeight: 257, Message: Success
+交易成功 - TxId: 18348757ed53eea8ca33b1c93d6b9266a2ece4bda24642ec920c31789451a379, BlockHeight: 257, Message: Success
+已发送 TxId 到订阅: 18348757ed53eea8ca33b1c93d6b9266a2ece4bda24642ec920c31789451a379
+Now waiting for event...
+更新期待的 TxId: 18348757ed52799fca807445d1cc065e679f49d54c0e4ca5be6f3e4648feddcd
+从缓存中找到匹配的事件: TxId=18348757ed52799fca807445d1cc065e679f49d54c0e4ca5be6f3e4648feddcd
+更新期待的 TxId: 18348757ed53eea8ca33b1c93d6b9266a2ece4bda24642ec920c31789451a379
+从缓存中找到匹配的事件: TxId=18348757ed53eea8ca33b1c93d6b9266a2ece4bda24642ec920c31789451a379
+End Waiting for event...
+event.TxId:%s
+ 18348757ed53eea8ca33b1c93d6b9266a2ece4bda24642ec920c31789451a379
+txID:%s
+ 18348757ed53eea8ca33b1c93d6b9266a2ece4bda24642ec920c31789451a379
+Accepted
+responseMsg:Addr_eth:0x60E6ac47F3425537A400cEF2eC7581ffe7299d0d|Hash:18348757ed53eea8ca33b1c93d6b9266a2ece4bda24642ec920c31789451a379|Time_rec:2025-04-09-11:02:47:00|Time_hash:2025-04-09-11:02:48:00|Time_send:2025-04-09-11:02:48:00|Stat:1
+已发送 TxId 到订阅: 18348757ed52799fca807445d1cc065e679f49d54c0e4ca5be6f3e4648feddcd
+Now waiting for event...
+End Waiting for event...
+event.TxId:%s
+ 18348757ed52799fca807445d1cc065e679f49d54c0e4ca5be6f3e4648feddcd
+txID:%s
+ 18348757ed52bb35ca3d11716ec7a9f9fb8cf66a727d441792ef838e71746aa7
+Wrong Answer
+End Waiting for event...
