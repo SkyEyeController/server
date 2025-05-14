@@ -49,7 +49,7 @@ func (s *server) ListenForEvents(ctx context.Context, req *pb.EventRequest) (*pb
 	simulatedTxId := fmt.Sprintf("simulated_tx_%d", time.Now().UnixNano())
 
 	// 直接使用接收消息的时间作为结束时间
-	timeHash := time.Now().Format("2006-01-02-15:04:05:00")
+	timeHash := time.Now().Format("2006-01-02 15:04:05.000")
 
 	// 写入文件（保留原有逻辑）
 	f, err := os.OpenFile("data.out", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
