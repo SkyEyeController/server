@@ -58,11 +58,6 @@ func (s *server) ListenForEvents(ctx context.Context, req *pb.EventRequest) (*pb
 		content := fmt.Sprintf("time_send:%s|time_confirm:%s|lis:%s|rsend:%s|time_end:%s\n",
 			params["sendts"], params["confirmtx"], params["lis"], params["rsend"], timeHash)
 		f.WriteString(content)
-        // 另起一行打印pre_node字段，如果存在的话
-        if preNode, exists := params["pre_node"]; exists && preNode != "" {
-            preNodeContent := fmt.Sprintf("pre_node:%s\n", preNode)
-            f.WriteString(preNodeContent)
-        }
 	} else {
 		log.Printf("写入 data.out 失败: %v", err)
 	}
@@ -76,9 +71,7 @@ func (s *server) ListenForEvents(ctx context.Context, req *pb.EventRequest) (*pb
 	responseMsg := fmt.Sprintf("Addr_eth:%s|Hash:%s|Time_rec:%s|Time_hash:%s|Time_send:%s|Stat:1",
 		addrEth, simulatedTxId, timeRec, timeHash, timeSend)
 	fmt.Printf("responseMsg:%s\n", responseMsg)
-    if preNode, exists := params["pre_node"]; exists && preNode != "" {
-        fmt.Printf("交易 #%d 的 pre_node: %s\n", transactionCounter, preNode)
-    }
+
 	return &pb.EventResponse{
 		Success: true,
 		Message: responseMsg,
@@ -130,11 +123,6 @@ func parseEventData(eventData string) (map[string]string, error) {
 	}
 	if content, ok := jsonData["content"]; ok {
 		params["content_address"] = content
-	}
-
-	// 修改这行，将 pre_node 改为 pre_nodes
-	if preNodes, ok := jsonData["pre_nodes"]; ok {
-		params["pre_node"] = preNodes // 保持内部名称不变，便于其他代码使用
 	}
 
 	fmt.Printf("Parsed parameters: %+v\n", params)

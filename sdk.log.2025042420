@@ -1,6 +1,0 @@
-2025-04-24 20:46:20.357	[DEBUG]	[SDK]	v2@v2.3.7/sdk_config.go:1173	[SDK] use tls
-2025-04-24 20:46:20.358	[DEBUG]	[SDK]	gRPCgo/main.go:268	[SDK] begin to QUERY system contract, [method:GET_CONTRACT_INFO]
-2025-04-24 20:46:20.451	[DEBUG]	[SDK]	v2@v2.3.7/sdk_system_contract.go:525	[SDK] begin to QUERY system contract, [method:GET_LAST_BLOCK]/[withRWSet:false]
-2025-04-24 20:48:22.687	[DEBUG]	[SDK]	v2@v2.3.7/sdk_config.go:1173	[SDK] use tls
-2025-04-24 20:48:22.688	[DEBUG]	[SDK]	gRPCgo/main.go:268	[SDK] begin to QUERY system contract, [method:GET_CONTRACT_INFO]
-2025-04-24 20:48:22.699	[DEBUG]	[SDK]	v2@v2.3.7/sdk_system_contract.go:525	[SDK] begin to QUERY system contract, [method:GET_LAST_BLOCK]/[withRWSet:false]

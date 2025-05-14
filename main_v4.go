@@ -34,7 +34,6 @@ func (s *server) ListenForEvents(ctx context.Context, req *pb.EventRequest) (*pb
 	eventData := req.GetEventData()
 	timeRec := time.Now().Format("2006-01-02-15:04:05:00")
 
-	// 解析事件数据（保留原有逻辑）
 	params, err := parseEventData(eventData)
 	if err != nil {
 		return &pb.EventResponse{
@@ -44,43 +43,82 @@ func (s *server) ListenForEvents(ctx context.Context, req *pb.EventRequest) (*pb
 	}
 
 	addrEth := params["content_address"]
-
-	// 生成一个模拟的txId，替代原来上链生成的txId
-	simulatedTxId := fmt.Sprintf("simulated_tx_%d", time.Now().UnixNano())
-
-	// 直接使用接收消息的时间作为结束时间
-	timeHash := time.Now().Format("2006-01-02-15:04:05:00")
-
-	// 写入文件（保留原有逻辑）
-	f, err := os.OpenFile("data.out", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err == nil {
-		defer f.Close()
-		content := fmt.Sprintf("time_send:%s|time_confirm:%s|lis:%s|rsend:%s|time_end:%s\n",
-			params["sendts"], params["confirmtx"], params["lis"], params["rsend"], timeHash)
-		f.WriteString(content)
-        // 另起一行打印pre_node字段，如果存在的话
-        if preNode, exists := params["pre_node"]; exists && preNode != "" {
-            preNodeContent := fmt.Sprintf("pre_node:%s\n", preNode)
-            f.WriteString(preNodeContent)
-        }
-	} else {
-		log.Printf("写入 data.out 失败: %v", err)
+	txId, err := s.invokeContract(params)
+	if err != nil {
+		timeSend := time.Now().Format("2006-01-02-15:04:05:00")
+		responseMsg := fmt.Sprintf("Addr_eth:%s|Hash:%s|Time_rec:%s|Time_hash:%s|Time_send:%s|Stat:0",
+			addrEth, "", timeRec, "", timeSend)
+		return &pb.EventResponse{
+			Success: false,
+			Message: responseMsg,
+		}, nil
 	}
 
-	// 简单增加交易计数并打印（保留原有逻辑）
-	transactionCounter++
-	fmt.Printf("===== 成功接收交易 #%d - 模拟TxId: %s =====\n", transactionCounter, simulatedTxId)
+	// 为当前请求创建专用通道
+	txIdChan := make(chan string, 1)
+	eventChan := make(chan *common.ContractEventInfo, 1)
 
-	// 构建响应消息
+	// 启动订阅协程
+	go subscribeToEvents(s.client, eventChan, txIdChan)
+
+	// 发送 txId 到订阅
+	txIdChan <- txId
+	fmt.Printf("已发送 TxId 到订阅: %s\n", txId)
+
+	// 等待链上事件
+	fmt.Println("Now waiting for event...")
+	var timeHash string
+	select {
+	case event := <-eventChan:
+		fmt.Println("End Waiting for event...")
+		fmt.Printf("event.TxId:%s\n", event.TxId)
+		fmt.Printf("txID:%s\n", txId)
+		timeHash = time.Now().Format("2006-01-02-15:04:05:00")
+		if event.TxId == txId {
+			fmt.Println("Accepted")
+
+			// 写入文件（不使用互斥锁）
+			f, err := os.OpenFile("data.out", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+			if err == nil {
+				defer f.Close()
+				content := fmt.Sprintf("time_send:%s|time_confirm:%s|lis:%s|rsend:%s|time_end:%s\n",
+					params["sendts"], params["confirmtx"], params["lis"], params["rsend"], timeHash)
+				f.WriteString(content)
+			} else {
+				log.Printf("写入 data.out 失败: %v", err)
+			}
+
+			// 简单增加交易计数并打印
+			transactionCounter++
+			fmt.Printf("===== 成功接收交易 #%d - TxId: %s =====\n", transactionCounter, txId)
+
+			timeSend := time.Now().Format("2006-01-02-15:04:05:00")
+			responseMsg := fmt.Sprintf("Addr_eth:%s|Hash:%s|Time_rec:%s|Time_hash:%s|Time_send:%s|Stat:1",
+				addrEth, event.TxId, timeRec, timeHash, timeSend)
+			fmt.Printf("responseMsg:%s\n", responseMsg)
+			return &pb.EventResponse{
+				Success: true,
+				Message: responseMsg,
+			}, nil
+		} else {
+			fmt.Println("Wrong Answer")
+		}
+	case <-time.After(100 * time.Second):
+		fmt.Println("End Waiting for event...")
+		timeSend := time.Now().Format("2006-01-02-15:04:05:00")
+		responseMsg := fmt.Sprintf("Addr_eth:%s|Hash:%s|Time_rec:%s|Time_hash:%s|Time_send:%s|Stat:0",
+			addrEth, txId, timeRec, "", timeSend)
+		return &pb.EventResponse{
+			Success: false,
+			Message: responseMsg,
+		}, nil
+	}
+
 	timeSend := time.Now().Format("2006-01-02-15:04:05:00")
 	responseMsg := fmt.Sprintf("Addr_eth:%s|Hash:%s|Time_rec:%s|Time_hash:%s|Time_send:%s|Stat:1",
-		addrEth, simulatedTxId, timeRec, timeHash, timeSend)
-	fmt.Printf("responseMsg:%s\n", responseMsg)
-    if preNode, exists := params["pre_node"]; exists && preNode != "" {
-        fmt.Printf("交易 #%d 的 pre_node: %s\n", transactionCounter, preNode)
-    }
+		addrEth, txId, timeRec, timeHash, timeSend)
 	return &pb.EventResponse{
-		Success: true,
+		Success: false,
 		Message: responseMsg,
 	}, nil
 }
@@ -106,7 +144,7 @@ func parseTimestamps(line string) (sendts string, confirmtx string, lis string, 
 	return
 }
 
-// 解析事件数据（保留原有逻辑）
+// 解析事件数据
 func parseEventData(eventData string) (map[string]string, error) {
 	fmt.Printf("Received event data: %s\n", eventData)
 
@@ -132,11 +170,6 @@ func parseEventData(eventData string) (map[string]string, error) {
 		params["content_address"] = content
 	}
 
-	// 修改这行，将 pre_node 改为 pre_nodes
-	if preNodes, ok := jsonData["pre_nodes"]; ok {
-		params["pre_node"] = preNodes // 保持内部名称不变，便于其他代码使用
-	}
-
 	fmt.Printf("Parsed parameters: %+v\n", params)
 	if len(params) < 4 {
 		fmt.Println("Bomb")
@@ -149,11 +182,10 @@ func parseEventData(eventData string) (map[string]string, error) {
 	return params, nil
 }
 
-// 以下保留原有函数，但在main函数中不再使用上链相关功能
-
 // 检查合约是否存在
 func checkContract(client *sdk.ChainClient) error {
 	contract, err := client.GetContractInfo(contractName)
+	//fmt.Printf(contract.Name)
 	if err != nil {
 		return fmt.Errorf("获取合约信息失败: %v", err)
 	}
@@ -242,9 +274,8 @@ func main() {
 		log.Fatalf("创建 Chainmaker 客户端失败: %v", err)
 	}
 
-	// 保留检查合约，以确保环境一致性
 	if err := checkContract(client); err != nil {
-		log.Printf("合约检查警告: %v，但将继续执行", err)
+		log.Fatalf("合约检查失败: %v", err)
 	}
 
 	lis, err := net.Listen("tcp", "0.0.0.0:50051")

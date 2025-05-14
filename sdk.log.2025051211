@@ -1,0 +1,9 @@
+2025-05-12 11:33:32.848	[DEBUG]	[SDK]	v2@v2.3.7/sdk_config.go:1173	[SDK] use tls
+2025-05-12 11:33:32.849	[DEBUG]	[SDK]	server/main.go:144	[SDK] begin to QUERY system contract, [method:GET_CONTRACT_INFO]
+2025-05-12 11:33:32.852	[ERROR]	[SDK]	v2@v2.3.7/sdk_client.go:480	[SDK] request to [3-110.239.69.188:12304-chainmaker.org] failed rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing dial tcp 110.239.69.188:12304: connect: connection refused", try to connect another node
+2025-05-12 11:33:32.853	[DEBUG]	[SDK]	v2@v2.3.7/sdk_client.go:480	[SDK] begin try to connect node [0-110.239.69.188:12301-chainmaker.org]
+2025-05-12 11:33:32.854	[ERROR]	[SDK]	v2@v2.3.7/sdk_client.go:480	[SDK] request to [0-110.239.69.188:12301-chainmaker.org] failed rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing dial tcp 110.239.69.188:12301: connect: connection refused", try to connect another node
+2025-05-12 11:33:32.855	[DEBUG]	[SDK]	v2@v2.3.7/sdk_client.go:480	[SDK] begin try to connect node [1-110.239.69.188:12302-chainmaker.org]
+2025-05-12 11:33:32.857	[ERROR]	[SDK]	v2@v2.3.7/sdk_client.go:480	[SDK] request to [1-110.239.69.188:12302-chainmaker.org] failed rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing dial tcp 110.239.69.188:12302: connect: connection refused", try to connect another node
+2025-05-12 11:33:32.857	[DEBUG]	[SDK]	v2@v2.3.7/sdk_client.go:480	[SDK] begin try to connect node [2-110.239.69.188:12303-chainmaker.org]
+2025-05-12 11:33:32.859	[ERROR]	[SDK]	v2@v2.3.7/sdk_client.go:480	[SDK] request to [2-110.239.69.188:12303-chainmaker.org] failed rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing dial tcp 110.239.69.188:12303: connect: connection refused", try to connect another node
