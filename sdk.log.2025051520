@@ -1,0 +1,12 @@
+2025-05-15 20:21:57.574	[DEBUG]	[SDK]	v2@v2.3.7/sdk_config.go:1173	[SDK] use tls
+2025-05-15 20:21:57.576	[DEBUG]	[SDK]	server/main.go:156	[SDK] begin to QUERY system contract, [method:GET_CONTRACT_INFO]
+2025-05-15 20:21:57.578	[ERROR]	[SDK]	v2@v2.3.7/sdk_client.go:480	[SDK] request to [1-110.239.69.188:12302-chainmaker.org] failed rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing dial tcp 110.239.69.188:12302: connect: connection refused", try to connect another node
+2025-05-15 20:21:57.579	[DEBUG]	[SDK]	v2@v2.3.7/sdk_client.go:480	[SDK] begin try to connect node [3-110.239.69.188:12304-chainmaker.org]
+2025-05-15 20:21:57.580	[ERROR]	[SDK]	v2@v2.3.7/sdk_client.go:480	[SDK] request to [3-110.239.69.188:12304-chainmaker.org] failed rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing dial tcp 110.239.69.188:12304: connect: connection refused", try to connect another node
+2025-05-15 20:21:57.581	[DEBUG]	[SDK]	v2@v2.3.7/sdk_client.go:480	[SDK] begin try to connect node [0-110.239.69.188:12301-chainmaker.org]
+2025-05-15 20:21:57.583	[ERROR]	[SDK]	v2@v2.3.7/sdk_client.go:480	[SDK] request to [0-110.239.69.188:12301-chainmaker.org] failed rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing dial tcp 110.239.69.188:12301: connect: connection refused", try to connect another node
+2025-05-15 20:21:57.583	[DEBUG]	[SDK]	v2@v2.3.7/sdk_client.go:480	[SDK] begin try to connect node [2-110.239.69.188:12303-chainmaker.org]
+2025-05-15 20:21:57.585	[ERROR]	[SDK]	v2@v2.3.7/sdk_client.go:480	[SDK] request to [2-110.239.69.188:12303-chainmaker.org] failed rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing dial tcp 110.239.69.188:12303: connect: connection refused", try to connect another node
+2025-05-15 20:25:13.587	[DEBUG]	[SDK]	v2@v2.3.7/sdk_config.go:1173	[SDK] use tls
+2025-05-15 20:25:13.588	[DEBUG]	[SDK]	server/main.go:156	[SDK] begin to QUERY system contract, [method:GET_CONTRACT_INFO]
+2025-05-15 20:55:32.976	[DEBUG]	[SDK]	v2@v2.3.7/sdk_config.go:1173	[SDK] use tls
