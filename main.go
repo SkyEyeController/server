@@ -29,7 +29,6 @@ type server struct {
 
 func (s *server) ListenForEvents(ctx context.Context, req *pb.EventRequest) (*pb.EventResponse, error) {
     eventData := req.GetEventData()
-    timeRec := time.Now().Format("2006-01-02-15:04:05:00")
 
     // 解析事件数据（保留原有逻辑）
     params, err := parseEventData(eventData)

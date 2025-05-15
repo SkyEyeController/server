@@ -1,6 +1,0 @@
-2025-05-08 17:34:16.071	[DEBUG]	[SDK]	v2@v2.3.7/sdk_config.go:1173	[SDK] use tls
-2025-05-08 17:34:16.072	[DEBUG]	[SDK]	server/main.go:163	[SDK] begin to QUERY system contract, [method:GET_CONTRACT_INFO]
-2025-05-08 17:34:30.194	[DEBUG]	[SDK]	v2@v2.3.7/sdk_user_contract.go:170	[SDK] begin to INVOKE contract, [contractName:Ethcontract]/[method:transferContent]/[txId:]/[params:[key:"from" value:"116.205.97.225"  key:"to" value:"0x2d41205CA8b4Dbdf77579D14642e5f218e983771"  key:"content_type" value:"RT:C|NS:2:1:2|V:0|IDU:text:32:hex|IM:0:0:1|entry:116.205.97.225:50051|sendts:2025-05-08 17:34:24.784|confirmtx:2025-05-08 17:34:24.784"  key:"content_address" value:"0xaB593137BdF32ceF560FeeD04D5994DebB057d61" ]]
-2025-05-08 17:34:30.196	[DEBUG]	[SDK]	v2@v2.3.7/sdk_common.go:57	[SDK] begin to QUERY system contract, [method:GET_TX_BY_TX_ID]/[txId:183d838c8e3ba5bfca731620f99c0c6a6cdff77b65aa4d2fb52f5de216f8c4cb]
-2025-05-08 17:34:30.700	[DEBUG]	[SDK]	v2@v2.3.7/sdk_common.go:57	[SDK] begin to QUERY system contract, [method:GET_TX_BY_TX_ID]/[txId:183d838c8e3ba5bfca731620f99c0c6a6cdff77b65aa4d2fb52f5de216f8c4cb]
-2025-05-08 17:34:30.703	[DEBUG]	[SDK]	v2@v2.3.7/sdk_system_contract.go:525	[SDK] begin to QUERY system contract, [method:GET_LAST_BLOCK]/[withRWSet:false]

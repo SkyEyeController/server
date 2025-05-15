@@ -1,6 +1,0 @@
-2025-05-14 17:06:12.591	[DEBUG]	[SDK]	v2@v2.3.7/sdk_config.go:1173	[SDK] use tls
-2025-05-14 17:06:12.591	[DEBUG]	[SDK]	server/main.go:156	[SDK] begin to QUERY system contract, [method:GET_CONTRACT_INFO]
-2025-05-14 17:19:44.895	[DEBUG]	[SDK]	v2@v2.3.7/sdk_config.go:1173	[SDK] use tls
-2025-05-14 17:19:44.896	[DEBUG]	[SDK]	server/main.go:156	[SDK] begin to QUERY system contract, [method:GET_CONTRACT_INFO]
-2025-05-14 17:24:56.246	[DEBUG]	[SDK]	v2@v2.3.7/sdk_config.go:1173	[SDK] use tls
-2025-05-14 17:24:56.246	[DEBUG]	[SDK]	server/main.go:156	[SDK] begin to QUERY system contract, [method:GET_CONTRACT_INFO]

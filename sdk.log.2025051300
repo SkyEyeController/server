@@ -1,2 +1,0 @@
-2025-05-13 00:00:00.679	[DEBUG]	[SDK]	v2@v2.3.7/sdk_config.go:1173	[SDK] use tls
-2025-05-13 00:00:00.679	[DEBUG]	[SDK]	server/main.go:156	[SDK] begin to QUERY system contract, [method:GET_CONTRACT_INFO]
